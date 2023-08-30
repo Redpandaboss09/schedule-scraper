@@ -10,7 +10,7 @@ from configparser import ConfigParser
 import data_cleaner as dc
 
 config = ConfigParser()
-config.read('../configs/pdf_config.ini')
+config.read('pdf_config.ini')
 
 def create_schedule(data: list()):
     # Create the pdf
