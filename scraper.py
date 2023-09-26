@@ -2,12 +2,14 @@ from playwright.sync_api import sync_playwright, Page
 from configparser import ConfigParser
 
 config = ConfigParser()
-config.read('../configs/pdf_config.ini')
+config.read('pdf_config.ini')
 
 # A parent function that calls all the other functions and logs into the website
 def login(page: Page, username: str = config['LOGIN']['username'], password: str = config['LOGIN']['password']):
     page.goto("https://stjohnsprep.myschoolapp.com/app/student#studentmyday/progress")
     page.goto("https://stjohnsprep.myschoolapp.com/app/student#login")
+    print('Navigated to login page... \n')
+
     page.get_by_label("Username or Email").click()
     page.get_by_label("Username or Email").fill(username)
     page.get_by_role("button", name="Next").click()
@@ -20,10 +22,12 @@ def login(page: Page, username: str = config['LOGIN']['username'], password: str
     page.get_by_role("button", name="No").click()
     page.get_by_role("link", name="Progress").click()
 
+    print('LOGGED IN! \n')
     return final_joining(page)
 
 # Scrape the class number
 def get_class_number(page: Page):
+    print('Scraping class numbers...')
     page.wait_for_selector('#coursesContainer')
 
     # Get the course elements
@@ -43,6 +47,7 @@ def get_class_number(page: Page):
 
 # Scrape the instructor names
 def get_instructor_names(page: Page):
+    print('Scraping instructor names...')
     page.wait_for_selector('#coursesContainer')
 
     # Get the course elements
@@ -56,19 +61,28 @@ def get_instructor_names(page: Page):
             instructor_name = h4_element.inner_text()
             instructor_names.append(instructor_name)
 
-    return delete_duplicates(instructor_names)
+    return instructor_names[2:]
 
 # Join the course names, instructor names, and class numbers
 def join_elements(page: Page, course_names: dict(), instructor_names: list(), class_numbers: list()):
     joined_elements = {}
 
+    print(course_names)
+    print(instructor_names)
+    print(class_numbers)
+    print('---')
+
     for key in course_names.keys():
+        print(key)
+        print(key[4:])
         joined_elements[key] = [course_names[key], instructor_names[int(key[4:])], class_numbers[int(key[4:])]]
 
+    print(joined_elements)
     return joined_elements
 
 # Scrape the unedited course names
 def course_names(page: Page):
+    print('Scraping course names...')
     page.wait_for_selector('#coursesContainer')
 
     # Get the course elements
@@ -101,6 +115,7 @@ def final_course_names(page: Page):
 
 # Final joining of values
 def final_joining(page: Page):
+    print('Finalizing values...')
     joined = join_elements(page, course_names(page)[0], get_instructor_names(page), get_class_number(page))
     courses_final = final_course_names(page)
 
