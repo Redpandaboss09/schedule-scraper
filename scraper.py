@@ -43,7 +43,7 @@ def get_class_number(page: Page):
             class_number = class_number.split(' | ')[0]
             class_numbers.append(class_number)
 
-    return delete_duplicates(class_numbers)
+    return class_numbers[2:]
 
 # Scrape the instructor names
 def get_instructor_names(page: Page):
@@ -73,8 +73,6 @@ def join_elements(page: Page, course_names: dict(), instructor_names: list(), cl
     print('---')
 
     for key in course_names.keys():
-        print(key)
-        print(key[4:])
         joined_elements[key] = [course_names[key], instructor_names[int(key[4:])], class_numbers[int(key[4:])]]
 
     print(joined_elements)
